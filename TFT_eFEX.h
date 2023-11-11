@@ -13,7 +13,7 @@
 
 #include <JPEGDecoder.h>
 
-// Call up the SPIFFS FLASH filing system this is part of the ESP Core
+// Call up the LittleFS FLASH filing system this is part of the ESP Core
 #if defined (ESP8266) || defined (ESP32)
   #define FS_NO_GLOBALS
   #include <FS.h>
@@ -21,7 +21,7 @@
 
 #ifdef ESP32
   #include "rom/tjpgd.h" // For native ESP32 jpeg decoder
-  #include "SPIFFS.h"    // ESP32 only
+  #include "LittleFS.h"    // ESP32 only
 #endif
 
 // Screen server setup
@@ -73,7 +73,7 @@ class TFT_eFEX : public TFT_eSPI {
   void     drawBezier(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint16_t color);  
   void     drawBezierSegment(int32_t x0, int32_t y0, int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint16_t color);
 
-           // Draw a bitmap stored in SPIFFS to the TFT or a Sprite if a Sprite instance is included
+           // Draw a bitmap stored in LittleFS to the TFT or a Sprite if a Sprite instance is included
   void     drawBmp(String filename, int16_t x, int16_t y, TFT_eSprite *_spr = nullptr);
 //To do:  void     drawBmp(const char *filename, int16_t x, int16_t y, TFT_eSprite *_spr = nullptr);
 
@@ -97,8 +97,8 @@ class TFT_eFEX : public TFT_eSPI {
            // Return a rainbow colour for a spectrum value 0-192
   uint16_t rainbowColor(uint8_t spectrum);
 
-           // List files in the SPIFFS for ESP8266 or ESP32
-  void     listSPIFFS(void);
+           // List files in the LittleFS for ESP8266 or ESP32
+  void     listLittleFS(void);
 
            // Support Right To Left (RTL) character rendering
   void     setCursorRTL(int32_t cx, int32_t cy);
@@ -116,7 +116,7 @@ class TFT_eFEX : public TFT_eSPI {
 #ifdef ESP32
            // Draw a jpeg stored in an array using the ESP32 native decoder, can crop and scale
   bool     drawJpg(const uint8_t * jpg_data, size_t jpg_len, uint16_t x=0, uint16_t y=0, uint16_t maxWidth=0, uint16_t maxHeight=0, uint16_t offX=0, uint16_t offY=0, jpeg_div_t scale=JPEG_DIV_NONE);
-           // Draw a jpeg stored in a file using the ESP32 native decoder, can crop and scale (Tested with SPIFFS file)
+           // Draw a jpeg stored in a file using the ESP32 native decoder, can crop and scale (Tested with LittleFS file)
   bool     drawJpgFile(fs::FS &fs, const char * path, uint16_t x=0, uint16_t y=0, uint16_t maxWidth=0, uint16_t maxHeight=0, uint16_t offX=0, uint16_t offY=0, jpeg_div_t scale=JPEG_DIV_NONE);
 #endif
 

@@ -132,7 +132,7 @@ void TFT_eFEX::drawBezierSegment(int32_t x0, int32_t y0, int32_t x1, int32_t y1,
 
 /***************************************************************************************
 ** Function name:           drawBmp
-** Description:             draw a bitmap stored in SPIFFS onto the TFT or in a Sprite
+** Description:             draw a bitmap stored in LittleFS onto the TFT or in a Sprite
 ***************************************************************************************/
 //void TFT_eFEX::drawBmp(const char *filename, int16_t x, int16_t y, TFT_eSprite *_spr) {
 void TFT_eFEX::drawBmp(String filename, int16_t x, int16_t y, TFT_eSprite *_spr) {
@@ -142,14 +142,14 @@ void TFT_eFEX::drawBmp(String filename, int16_t x, int16_t y, TFT_eSprite *_spr)
   fs::File bmpFS;
 
   // Note: ESP32 passes "open" test even if file does not exist, whereas ESP8266 returns NULL
-  if ( !SPIFFS.exists(filename) )
+  if ( !LittleFS.exists(filename) )
   {
     Serial.println(F(" File not found")); // Can comment out if not needed
     return;
   }
 
   // Open requested file
-  bmpFS = SPIFFS.open(filename, "r");
+  bmpFS = LittleFS.open(filename, "r");
 
   if (!bmpFS)
   {
@@ -238,27 +238,27 @@ uint32_t TFT_eFEX::read32(fs::File &f) {
 
 /***************************************************************************************
 ** Function name:           drawJpeg
-** Description:             draw a jpeg stored in SPIFFS onto the TFT
+** Description:             draw a jpeg stored in LittleFS onto the TFT
 ***************************************************************************************/
 void TFT_eFEX::drawJpeg(String filename, int16_t xpos, int16_t ypos, TFT_eSprite *_spr) {
 
   if ( (_spr == nullptr) && ((xpos >= _tft->width()) || (ypos >= _tft->height()))) return;
 
   // Note: ESP32 passes "open" test even if file does not exist, whereas ESP8266 returns NULL
-  if ( !SPIFFS.exists(filename) )
+  if ( !LittleFS.exists(filename) )
   {
     Serial.println(F(" Jpeg file not found")); // Can comment out if not needed
     return;
   }
 
   // Open the named file (the Jpeg decoder library will close it after rendering image)
-  fs::File jpegFile = SPIFFS.open( filename, "r");    // File handle reference for SPIFFS
+  fs::File jpegFile = LittleFS.open( filename, "r");    // File handle reference for LittleFS
   //  File jpegFile = SD.open( filename, FILE_READ);  // or, file handle reference for SD library
  
   // Use one of the three following methods to initialise the decoder:
-  //boolean decoded = JpegDec.decodeFsFile(jpegFile); // Pass a SPIFFS file handle to the decoder,
+  //boolean decoded = JpegDec.decodeFsFile(jpegFile); // Pass a LittleFS file handle to the decoder,
   //boolean decoded = JpegDec.decodeSdFile(jpegFile); // or pass the SD file handle to the decoder,
-  boolean decoded = JpegDec.decodeFsFile(filename);  // or pass the filename (leading / distinguishes SPIFFS files)
+  boolean decoded = JpegDec.decodeFsFile(filename);  // or pass the filename (leading / distinguishes LittleFS files)
                                    // Note: the filename can be a String or character array type
   if (decoded) {
     // render the image onto the screen at given coordinates
@@ -466,20 +466,20 @@ void TFT_eFEX::drawJpeg(const uint8_t arrayname[], uint32_t array_size, int16_t 
 ***************************************************************************************/
 void TFT_eFEX::jpegInfo(String filename) {
   // Note: ESP32 passes "open" test even if file does not exist, whereas ESP8266 returns NULL
-  if ( !SPIFFS.exists(filename) )
+  if ( !LittleFS.exists(filename) )
   {
     Serial.println(F(" Jpeg file not found")); // Can comment out if not needed
     return;
   }
 
   // Open the named file (the Jpeg decoder library abort will close it after reading image info)
-  fs::File jpegFile = SPIFFS.open( filename, "r");    // File handle reference for SPIFFS
+  fs::File jpegFile = LittleFS.open( filename, "r");    // File handle reference for LittleFS
   //  File jpegFile = SD.open( filename, FILE_READ);  // or, file handle reference for SD library
  
   // Use one of the three following methods to initialise the decoder:
-  //boolean decoded = JpegDec.decodeFsFile(jpegFile); // Pass a SPIFFS file handle to the decoder,
+  //boolean decoded = JpegDec.decodeFsFile(jpegFile); // Pass a LittleFS file handle to the decoder,
   //boolean decoded = JpegDec.decodeSdFile(jpegFile); // or pass the SD file handle to the decoder,
-  boolean decoded = JpegDec.decodeFsFile(filename);  // or pass the filename (leading / distinguishes SPIFFS files)
+  boolean decoded = JpegDec.decodeFsFile(filename);  // or pass the filename (leading / distinguishes LittleFS files)
 
   static const char line[] PROGMEM =  "===============";
   if (decoded) {
@@ -637,14 +637,14 @@ uint16_t TFT_eFEX::rainbowColor(uint8_t spectrum)
 
 
 /***************************************************************************************
-** Function name:           listSPIFFS
-** Description:             Listing SPIFFS files
+** Function name:           listLittleFS
+** Description:             Listing LittleFS files
 ***************************************************************************************/
 #ifdef ESP8266
-void TFT_eFEX::listSPIFFS(void) {
-  Serial.println(F("\r\nListing SPIFFS files:"));
+void TFT_eFEX::listLittleFS(void) {
+  Serial.println(F("\r\nListing LittleFS files:"));
 
-  fs::Dir dir = SPIFFS.openDir("/"); // Root directory
+  fs::Dir dir = LittleFS.openDir("/"); // Root directory
 
   static const char line[] PROGMEM =  "=================================================";
   Serial.println(FPSTR(line));
@@ -675,15 +675,15 @@ void TFT_eFEX::listSPIFFS(void) {
 
 #elif defined ESP32
 // TODO: add sub directories
-void TFT_eFEX::listSPIFFS(void) {
-  Serial.println(F("\r\nListing SPIFFS files:"));
+void TFT_eFEX::listLittleFS(void) {
+  Serial.println(F("\r\nListing LittleFS files:"));
   static const char line[] PROGMEM =  "=================================================";
 
   Serial.println(FPSTR(line));
   Serial.println(F("  File name                              Size"));
   Serial.println(FPSTR(line));
 
-  fs::File root = SPIFFS.open("/");
+  fs::File root = LittleFS.open("/");
   if (!root) {
     Serial.println(F("Failed to open directory"));
     return;
@@ -703,7 +703,7 @@ void TFT_eFEX::listSPIFFS(void) {
     } else {
       String fileName = file.name();
       Serial.print("  " + fileName);
-      // File path can be 31 characters maximum in SPIFFS
+      // File path can be 31 characters maximum in LittleFS
       int spaces = 33 - fileName.length(); // Tabulate nicely
       if (spaces < 1) spaces = 1;
       while (spaces--) Serial.print(" ");
@@ -724,7 +724,7 @@ void TFT_eFEX::listSPIFFS(void) {
 
 #else
 
-void TFT_eFEX::listSPIFFS(void) {}
+void TFT_eFEX::listLittleFS(void) {}
 
 #endif
 
@@ -1493,8 +1493,8 @@ bool TFT_eFEX::drawJpg(const uint8_t * jpg_data, size_t jpg_len, uint16_t x, uin
 /**************************************************************************/
 /*!
     @brief  Decode an array stored as a file (ESP32 only)
-    @param    Filing system, e.g. SPIFFS
-    @param    File name, precede with / for SPIFFS
+    @param    Filing system, e.g. LittleFS
+    @param    File name, precede with / for LittleFS
     @param    Display x coord to draw at
     @param    Display y coord to draw at
     @param    Optional: Unscaled jpeg maximum width in pixels
@@ -1505,7 +1505,7 @@ bool TFT_eFEX::drawJpg(const uint8_t * jpg_data, size_t jpg_len, uint16_t x, uin
     @return   true if decoded, else false
 */
 /**************************************************************************/
-// e.g. tft.drawJpgFile(SPIFFS, "/EagleEye.jpg", 0, 10);
+// e.g. tft.drawJpgFile(LittleFS, "/EagleEye.jpg", 0, 10);
 bool TFT_eFEX::drawJpgFile(fs::FS &fs, const char * path, uint16_t x, uint16_t y, uint16_t maxWidth, uint16_t maxHeight, uint16_t offX, uint16_t offY, jpeg_div_t scale){
 
     maxWidth = maxWidth>>(uint8_t)scale;
